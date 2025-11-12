@@ -1,0 +1,51 @@
+--make a payment
+#bank api endpoint
+{your-file-directory}/dummy-bank.php
+for example my file path is:
+http://pgw.local/banks/dummy-bank.php
+
+#credentials
+bank auth username: dummybank
+bank auth password: !apple
+
+#rules:
+username: required(string)
+password: required(string)
+card_no: required(int)
+card_holder_name: required(string)
+card_cvv: required(int)
+card_exp: required(int)
+amount: required(int)
+
+-amount must be grater than 0
+-card information can't be empty, card no min length 16, cvv 3, exp 4
+
+#bank response code:
+success: 100
+failed:422
+invalid method request: 405
+
+--make a refund
+#bank api endpoint
+{your-file-directory}/dummy-bank-refund.php
+for example my file path is:
+http://pgw.local/banks/dummy-bank-refund.php
+
+#credentials
+bank auth username: dummybank
+bank auth password: !apple
+
+#rules:
+username: required(string)
+password: required(string)
+amount: required(int)
+refund_amount: required(int)
+order_id: required(string)
+
+-amount and refund_amount must be grater than 0
+-refund amount must be less than equal to amount
+
+#bank response code:
+success: 100
+failed:422
+invalid method request: 405
