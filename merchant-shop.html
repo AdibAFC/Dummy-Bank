@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Product Page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .card {
+            transition: transform 0.2s ease-in-out;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <h2 class="text-center mb-4">Our Products</h2>
+    <div class="row g-4">
+        <script>
+            const products = [];
+            for (let i = 1; i <= 9; i++) {
+                products.push({
+                    id: i,
+                    name: "Product " + i,
+                    price: (i * 100) + ".00",
+                    img: "https://placehold.co/300x300?text=Product+" + i
+                });
+            }
+            document.write(
+                products.map(p => `
+          <div class="col-md-4">
+            <div class="card h-100">
+              <img src="${p.img}" class="card-img-top" alt="${p.name}">
+              <div class="card-body text-center">
+                <h5 class="card-title">${p.name}</h5>
+                <p class="card-text text-success fw-bold">$${p.price}</p>
+                <button class="btn btn-outline-primary btn-sm me-2">Add to Cart</button>
+                <button class="btn btn-primary btn-sm buy-now" data-id="${p.id}" data-name="${p.name}" data-price="${p.price}">Buy Now</button>
+              </div>
+            </div>
+          </div>
+        `).join('')
+            );
+        </script>
+    </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentModalLabel">Complete Payment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <!-- <form id="paymentForm" method="POST" action="https://example.com/payment">  
+                    <div class="mb-3">
+                        <label class="form-label">Name on Card</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-control" name="card" required maxlength="16">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expiry Date</label>
+                            <input type="text" class="form-control" name="exp" placeholder="MM/YY" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">CVV</label>
+                            <input type="password" class="form-control" name="cvv" maxlength="3" required>
+                        </div>
+                    </div>
+                    <input type="hidden" name="product_id">
+                    <button type="submit" class="btn btn-success w-100">Make Payment</button>
+                </form> -->
+                <!-- <form id="paymentForm" method="POST" action="http://127.0.0.1:8000/api/make-payment">
+
+            
+                    <input type="hidden" name="merchant_id" value="1">
+
+                  
+                    <input type="hidden" name="invoice_id" value="INV-12345">
+
+                    <input type="hidden" name="currency_code" value="USD">
+
+                    <input type="hidden" name="amount" value="500">
+
+                    <div class="mb-3">
+                        <label class="form-label">Name on Card</label>
+                        <input type="text" class="form-control" name="card_holder_name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Card Number</label>
+                        <input type="text" class="form-control" name="card_no" required maxlength="16">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Expiry Date</label>
+                        
+                            <input type="text" class="form-control" name="card_exp" placeholder="MMYY" required maxlength="4">
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">CVV</label>
+                            <input type="password" class="form-control" name="card_cvv" maxlength="3" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">Make Payment</button>
+                </form> -->
+
+                <form id="paymentForm" method="POST" action="http://127.0.0.1:8000/api/make-payment">
+
+                        <!-- Merchant ID (fill dynamically or manually) -->
+                        <input type="hidden" name="merchant_id">
+
+                        <!-- Invoice ID (fill dynamically or manually) -->
+                        <input type="hidden" name="invoice_id">
+
+                        <!-- Currency (fill dynamically or manually) -->
+                        <input type="hidden" name="currency_code">
+
+                        <!-- Amount (fill dynamically or manually) -->
+                        <input type="hidden" name="amount">
+
+                        <div class="mb-3">
+                            <label class="form-label">Name on Card</label>
+                            <input type="text" class="form-control" name="card_holder_name" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Card Number</label>
+                            <input type="text" class="form-control" name="card_no" maxlength="16" required>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Expiry Date (MMYY)</label>
+                                <input type="text" class="form-control" name="card_exp" maxlength="4" placeholder="MMYY" required>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CVV</label>
+                                <input type="password" class="form-control" name="card_cvv" maxlength="3" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-success w-100">Make Payment</button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+            <h5 id="confirmMessage" class="mb-3"></h5>
+            <button class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap & jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- <script>
+$(document).ready(function() {
+    const paymentModal = new bootstrap.Modal('#paymentModal');
+    const confirmModal = new bootstrap.Modal('#confirmationModal');
+
+    $('.buy-now').on('click', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const price = $(this).data('price');
+
+        // Reset the form first
+        $('#paymentForm')[0].reset();
+
+        // Fill hidden fields dynamically
+        $('input[name="product_id"]').val(id);
+        $('input[name="amount"]').val(price);
+        $('input[name="invoice_id"]').val(`INV-${id}-${Date.now()}`); // unique invoice
+        $('input[name="merchant_id"]').val("1"); // or dynamic merchant
+        $('input[name="currency_code"]').val("USD");
+
+        paymentModal.show();
+    });
+
+    $('#paymentForm').on('submit', function(e) {
+        e.preventDefault();
+
+        // Basic card validation
+        const card_no = $('input[name="card_no"]').val();
+        const card_exp = $('input[name="card_exp"]').val();
+        const card_cvv = $('input[name="card_cvv"]').val();
+
+        if(!/^\d{16}$/.test(card_no)) { alert("Card number must be 16 digits"); return; }
+        if(!/^\d{4}$/.test(card_exp)) { alert("Expiry must be MMYY"); return; }
+        if(!/^\d{3}$/.test(card_cvv)) { alert("CVV must be 3 digits"); return; }
+
+        const jsonData = Object.fromEntries(new FormData(this).entries());
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            contentType: "application/json",
+            data: JSON.stringify(jsonData),
+            success: function(response) {
+                console.log(response);
+                paymentModal.hide();
+                $('#confirmMessage').text(`Order Confirmed! Your payment was successful.\nOrder ID: ${response.data.order_id}`);
+                confirmModal.show();
+            },
+            error: function(xhr) {
+                paymentModal.hide();
+                let msg = "Payment Failed! Please try again.";
+                if(xhr.responseJSON && xhr.responseJSON.response_message){
+                    msg += `\nReason: ${xhr.responseJSON.response_message}`;
+                }
+                $('#confirmMessage').text(msg);
+                confirmModal.show();
+            }
+        });
+    });
+});
+</script> -->
+<script>
+$(document).ready(function() {
+    const paymentModal = new bootstrap.Modal('#paymentModal');
+    const confirmModal = new bootstrap.Modal('#confirmationModal');
+
+    $('.buy-now').on('click', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const price = $(this).data('price');
+
+        // Reset the form first
+        $('#paymentForm')[0].reset();
+
+        // Fill hidden fields dynamically
+        $('input[name="product_id"]').val(id);
+        $('input[name="amount"]').val(price);
+        $('input[name="invoice_id"]').val(`INV-${id}-${Date.now()}`); // unique invoice
+        $('input[name="merchant_id"]').val("1"); // or dynamic merchant
+        $('input[name="currency_code"]').val("USD");
+
+        paymentModal.show();
+    });
+
+    $('#paymentForm').on('submit', function(e) {
+        e.preventDefault();
+
+        // Basic card validation
+        const card_no = $('input[name="card_no"]').val();
+        const card_exp = $('input[name="card_exp"]').val();
+        const card_cvv = $('input[name="card_cvv"]').val();
+
+        if(!/^\d{16}$/.test(card_no)) { alert("Card number must be 16 digits"); return; }
+        if(!/^\d{4}$/.test(card_exp)) { alert("Expiry must be MMYY"); return; }
+        if(!/^\d{3}$/.test(card_cvv)) { alert("CVV must be 3 digits"); return; }
+
+        const jsonData = Object.fromEntries(new FormData(this).entries());
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: jsonData, // send as form data
+
+            success: function(response) {
+                console.log(response);
+                paymentModal.hide();
+                if(response.data && response.data.response_code == "100"){
+                    $('#confirmMessage').text(`Order Confirmed! Your payment was successful.\nOrder ID: ${response.data.order_id}`);
+                }
+                else{
+                     $('#confirmMessage').text(`Your payment was not successful.`);
+                }
+                confirmModal.show();
+            },
+            // error: function(xhr) {
+            //     paymentModal.hide();
+
+            //     let msg = "Payment Failed! Please try again.";
+
+            //     // Check if API returned JSON with response_message
+            //     if (xhr.responseJSON && xhr.responseJSON.response_message) {
+            //         msg += `\nReason: ${xhr.responseJSON.response_message}`;
+            //     } 
+            //     // If API returned plain text
+            //     else if(xhr.responseText){
+            //         msg += `\nReason: ${xhr.responseText}`;
+            //     }
+
+            //     $('#confirmMessage').text(msg);
+            //     confirmModal.show();
+            // }
+            error: function(xhr) {
+                console.log(xhr);
+                // paymentModal.hide();
+
+
+                // let msg = "Payment Failed! Please try again.";
+
+                // if(xhr.responseJSON && xhr.responseJSON.response_message){
+                //     msg += `\nReason: ${xhr.responseJSON.response_message}`;
+                // } 
+                // else if(xhr.responseJSON && xhr.responseJSON.message){
+                //     msg += `\nReason: ${xhr.responseJSON.message}`;
+                // }
+                // else if(xhr.responseText){
+                //     msg += `\nReason: ${xhr.responseText}`;
+                // }
+
+                // $('#confirmMessage').text(msg);
+                // confirmModal.show();
+            }
+
+        });
+    });
+});
+</script>
+
+
+</body>
+</html>
