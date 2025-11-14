@@ -179,7 +179,7 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-<script>
+<!-- <script>
 $(document).ready(function() {
     const paymentModal = new bootstrap.Modal('#paymentModal');
     const confirmModal = new bootstrap.Modal('#confirmationModal');
@@ -222,6 +222,7 @@ $(document).ready(function() {
             contentType: "application/json",
             data: JSON.stringify(jsonData),
             success: function(response) {
+                console.log(response);
                 paymentModal.hide();
                 $('#confirmMessage').text(`Order Confirmed! Your payment was successful.\nOrder ID: ${response.data.order_id}`);
                 confirmModal.show();
@@ -235,6 +236,101 @@ $(document).ready(function() {
                 $('#confirmMessage').text(msg);
                 confirmModal.show();
             }
+        });
+    });
+});
+</script> -->
+<script>
+$(document).ready(function() {
+    const paymentModal = new bootstrap.Modal('#paymentModal');
+    const confirmModal = new bootstrap.Modal('#confirmationModal');
+
+    $('.buy-now').on('click', function() {
+        const id = $(this).data('id');
+        const name = $(this).data('name');
+        const price = $(this).data('price');
+
+        // Reset the form first
+        $('#paymentForm')[0].reset();
+
+        // Fill hidden fields dynamically
+        $('input[name="product_id"]').val(id);
+        $('input[name="amount"]').val(price);
+        $('input[name="invoice_id"]').val(`INV-${id}-${Date.now()}`); // unique invoice
+        $('input[name="merchant_id"]').val("1"); // or dynamic merchant
+        $('input[name="currency_code"]').val("USD");
+
+        paymentModal.show();
+    });
+
+    $('#paymentForm').on('submit', function(e) {
+        e.preventDefault();
+
+        // Basic card validation
+        const card_no = $('input[name="card_no"]').val();
+        const card_exp = $('input[name="card_exp"]').val();
+        const card_cvv = $('input[name="card_cvv"]').val();
+
+        if(!/^\d{16}$/.test(card_no)) { alert("Card number must be 16 digits"); return; }
+        if(!/^\d{4}$/.test(card_exp)) { alert("Expiry must be MMYY"); return; }
+        if(!/^\d{3}$/.test(card_cvv)) { alert("CVV must be 3 digits"); return; }
+
+        const jsonData = Object.fromEntries(new FormData(this).entries());
+
+        $.ajax({
+            url: $(this).attr('action'),
+            type: $(this).attr('method'),
+            data: jsonData, // send as form data
+
+            success: function(response) {
+                console.log(response);
+                paymentModal.hide();
+                if(response.data && response.data.response_code == "100"){
+                    $('#confirmMessage').text(`Order Confirmed! Your payment was successful.\nOrder ID: ${response.data.order_id}`);
+                }
+                else{
+                     $('#confirmMessage').text(`Your payment was not successful.`);
+                }
+                confirmModal.show();
+            },
+            // error: function(xhr) {
+            //     paymentModal.hide();
+
+            //     let msg = "Payment Failed! Please try again.";
+
+            //     // Check if API returned JSON with response_message
+            //     if (xhr.responseJSON && xhr.responseJSON.response_message) {
+            //         msg += `\nReason: ${xhr.responseJSON.response_message}`;
+            //     } 
+            //     // If API returned plain text
+            //     else if(xhr.responseText){
+            //         msg += `\nReason: ${xhr.responseText}`;
+            //     }
+
+            //     $('#confirmMessage').text(msg);
+            //     confirmModal.show();
+            // }
+            error: function(xhr) {
+                console.log(xhr);
+                // paymentModal.hide();
+
+
+                // let msg = "Payment Failed! Please try again.";
+
+                // if(xhr.responseJSON && xhr.responseJSON.response_message){
+                //     msg += `\nReason: ${xhr.responseJSON.response_message}`;
+                // } 
+                // else if(xhr.responseJSON && xhr.responseJSON.message){
+                //     msg += `\nReason: ${xhr.responseJSON.message}`;
+                // }
+                // else if(xhr.responseText){
+                //     msg += `\nReason: ${xhr.responseText}`;
+                // }
+
+                // $('#confirmMessage').text(msg);
+                // confirmModal.show();
+            }
+
         });
     });
 });
